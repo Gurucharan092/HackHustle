@@ -1,0 +1,7 @@
+torch
+transformers
+Pillow
+opencv-python
+numpy
+scikit-learn
+imagehash
