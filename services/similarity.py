@@ -1,84 +1,45 @@
+import numpy as np
+
+def cosine_similarity(a, b):
+    a = a.flatten()
+    b = b.flatten()
+    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+
+
+def find_top_k_similar(query_emb, db_embeddings, k=3):
+    scores = []
+
+    for name, emb in db_embeddings.items():
+        sim = cosine_similarity(query_emb, emb)
+        scores.append((name, sim))
+
+    # Sort by similarity descending
+    scores.sort(key=lambda x: x[1], reverse=True)
+
+    return scores[:k]  # Top K matches
+
 # import pickle
 # import numpy as np
 # from sklearn.metrics.pairwise import cosine_similarity
 # from models.clip_model import get_embedding
-#
-# EMBED_PATH = "data/reference_embeddings.pkl"
-#
-# with open(EMBED_PATH, "rb") as f:
-#     reference_embeddings = pickle.load(f)
-#
-#
-# def _ensure_vector(x):
-#     """
-#     Ensures embedding is a flat 1D numpy array
-#     """
-#     if hasattr(x, "detach"):  # torch tensor
-#         x = x.detach().cpu().numpy()
-#
-#     x = np.array(x)
-#     x = np.squeeze(x)
-#
-#     if x.ndim != 1:
-#         raise ValueError(f"Invalid embedding shape after squeeze: {x.shape}")
-#
-#     return x
-#
-#
+
+# with open("data/reference_embeddings.pkl", "rb") as f:
+#     ref_embeddings = pickle.load(f)
+
 # def check_similarity(image_path):
-#     """
-#     Returns:
-#         max_similarity (float)
-#         best_match (str)
-#     """
-#
-#     # Get query embedding
-#     query_emb = get_embedding(image_path)
-#     query_emb = _ensure_vector(query_emb)
-#
+#     query = get_embedding(image_path)
+
 #     max_sim = -1
 #     best_match = None
-#
-#     for name, emb in reference_embeddings.items():
-#         try:
-#             emb = _ensure_vector(emb)
-#
-#             sim = cosine_similarity(
-#                 query_emb.reshape(1, -1),
-#                 emb.reshape(1, -1)
-#             )[0][0]
-#
-#             if sim > max_sim:
-#                 max_sim = sim
-#                 best_match = name
-#
-#         except Exception as e:
-#             print(f"⚠️ Skipping {name}: {e}")
-#
-#     return max_sim, best_match
 
-import pickle
-import numpy as np
-from sklearn.metrics.pairwise import cosine_similarity
-from models.clip_model import get_embedding
+#     for name, emb in ref_embeddings.items():
+#         sim = cosine_similarity(
+#             query.reshape(1, -1),
+#             emb.reshape(1, -1)
+#         )[0][0]
 
-with open("data/reference_embeddings.pkl", "rb") as f:
-    ref_embeddings = pickle.load(f)
-
-def check_similarity(image_path):
-    query = get_embedding(image_path)
-
-    max_sim = -1
-    best_match = None
-
-    for name, emb in ref_embeddings.items():
-        sim = cosine_similarity(
-            query.reshape(1, -1),
-            emb.reshape(1, -1)
-        )[0][0]
-
-        if sim > max_sim:
-            max_sim = sim
-            best_match = name
+#         if sim > max_sim:
+#             max_sim = sim
+#             best_match = name
 
     return float(max_sim), best_match

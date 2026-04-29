@@ -49,7 +49,7 @@ def compute_score(sim, hash_dist, ela_flag, exif_flag):
 
     # EXIF
     if exif_flag == "OLD":
-        score -= 20
+        score -= 10
         flags.append("OLD_IMAGE_REUSE")
 
     elif exif_flag == "ERROR":
